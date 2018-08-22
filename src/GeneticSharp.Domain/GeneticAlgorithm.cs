@@ -260,6 +260,63 @@ namespace GeneticSharp.Domain
 
         #region Methods
 
+        public void Init()
+        {
+            lock (m_lock)
+            {
+                State = GeneticAlgorithmState.Started;
+                var startDateTime = DateTime.Now;
+                Population.CreateInitialGeneration();
+                TimeEvolving = DateTime.Now - startDateTime;
+            }
+        }
+        public void EvolveNextGeneration()
+        {
+            try
+            {
+                lock (m_lock)
+                {
+                    m_stopRequested = false;
+                }
+
+                if (Population.GenerationsNumber == 0)
+                {
+                    throw new InvalidOperationException("Attempt to resume a genetic algorithm which was not yet started.");
+                }
+
+                if (Population.GenerationsNumber > 1)
+                {
+                    if (Termination.HasReached(this))
+                    {
+                        throw new InvalidOperationException("Attempt to resume a genetic algorithm with a termination ({0}) already reached. Please, specify a new termination or extend the current one.".With(Termination));
+                    }
+
+                    State = GeneticAlgorithmState.Resumed;
+                }
+
+                if (EndCurrentGeneration())
+                {
+                    return;
+                }
+
+                bool terminationConditionReached = false;
+                DateTime startDateTime;
+
+                startDateTime = DateTime.Now;
+
+                var parents = SelectParents();
+                var offspring = Cross(parents);
+                Mutate(offspring);
+                var newGenerationChromosomes = Reinsert(offspring, parents);
+                Population.CreateNewGeneration(newGenerationChromosomes);
+                TimeEvolving += DateTime.Now - startDateTime;
+            }
+            catch
+            {
+                State = GeneticAlgorithmState.Stopped;
+                throw;
+            }
+        }
         /// <summary>
         /// Starts the genetic algorithm using population, fitness, selection, crossover, mutation and termination configured.
         /// </summary>
