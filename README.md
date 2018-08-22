@@ -1,4 +1,4 @@
-# GeneticSharp
+# GeneticSharp - used in extension library
 
 [![Join the chat at https://gitter.im/GeneticSharp/Lobby](https://badges.gitter.im/GeneticSharp/Lobby.svg)](https://gitter.im/GeneticSharp/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build status](https://ci.appveyor.com/api/projects/status/h9ptxpyj30ah3mva/branch/master?svg=true)](https://ci.appveyor.com/project/giacomelli/geneticsharp)
